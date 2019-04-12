@@ -5,6 +5,10 @@
   "main": "index.js",
   "author": "Jeremy Schutte",
   "license": "MIT",
+  "scripts": {
+    "test": "mocha",
+    "start": "node index.js"
+  },
   "dependencies": {
     "@elastic/elasticsearch": "^7.0.0-rc.1",
     "body-parser": "^1.18.3",

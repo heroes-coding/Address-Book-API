@@ -81,4 +81,4 @@ const Contact = properties => {
   }
 }
 
-module.exports = Contact
+module.exports = { Contact, propNames }

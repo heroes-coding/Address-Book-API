@@ -21,7 +21,7 @@ const getContact = ({ name, elasticContactIndex, elasticSearchClient }) =>
     )
   })
 
-const client = ({ elasticSearchUrl, elasticContactIndex }) => () => {
+const client = ({ elasticSearchUrl, elasticContactIndex }) => {
   console.log(
     `Elastic search configured with: ${JSON.stringify({
       elasticSearchUrl,
@@ -32,15 +32,25 @@ const client = ({ elasticSearchUrl, elasticContactIndex }) => () => {
     nodes: [elasticSearchUrl]
   })
   return {
-    getHealth: () =>
-      new Promise((resolve, reject) => {
-        elasticSearchClient.cluster.health({}, (err, resp, status) => {
-          if (err) {
-            return reject(err)
-          }
-          return resolve(resp.body)
-        })
-      }),
+    getContactsByQuery: async ({ pageSize, page, query }) => {
+      try {
+        const fullQuery = { index: elasticContactIndex }
+        if (page) {
+          fullQuery.from = pageSize * page
+        }
+        if (pageSize) {
+          fullQuery.size = pageSize
+        }
+        if (query) {
+          fullQuery.q = query
+        }
+        const result = await elasticSearchClient.search(fullQuery)
+        const contacts = result.body.hits.hits.map(h => h._source)
+        return contacts
+      } catch (err) {
+        throw err
+      }
+    },
     getContact: name =>
       getContact({ name, elasticContactIndex, elasticSearchClient }),
     updateContact: updatedContact =>

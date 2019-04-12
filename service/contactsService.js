@@ -20,7 +20,8 @@ const getContactGetClientResponse = async (
   }
 }
 
-const contactsService = ({ client, Contact }) => () => ({
+const contactsService = ({ client, Contact }) => ({
+  queryContacts: query => getClientResponse(client.getContactsByQuery, query),
   addContact: contact =>
     getContactGetClientResponse(contact, Contact, client.addContact),
   updateContact: contact =>
