@@ -1,0 +1,14 @@
+{
+  "name": "Address-Book-API",
+  "version": "1.0.0",
+  "description": "A RESTful API for an address book with an Elasticsearch data store written in Node / Express",
+  "main": "index.js",
+  "author": "Jeremy Schutte",
+  "license": "MIT",
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.0.0-rc.1",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mocha": "^6.1.3"
+  }
+}
