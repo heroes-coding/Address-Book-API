@@ -23,18 +23,20 @@ const contactsService = require('./service/contactsService')({
   Contact
 })
 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.text())
+app.use(bodyParser.json({ type: 'application/json' }))
+
 // controllers - only need to be called to create the controller
+// this must come last and after all app.use statements above or the app
+// won't accept json among other things
 require('./controller/contactsController')({
   app,
   DEFAULT_CONTACT_PAGE,
   DEFAULT_CONTACT_PAGE_SIZE,
   contactsService
 })
-
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.text())
-app.use(bodyParser.json({ type: 'application/json' }))
 
 app.listen(port)
 console.log('Express app listening on port ' + port)
