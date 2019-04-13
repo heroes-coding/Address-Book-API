@@ -42,7 +42,7 @@ const client = ({ elasticSearchUrl, elasticContactIndex }) => {
           fullQuery.size = pageSize
         }
         if (query) {
-          fullQuery.q = query
+          fullQuery.body = query
         }
         const result = await elasticSearchClient.search(fullQuery)
         const contacts = result.body.hits.hits.map(h => h._source)

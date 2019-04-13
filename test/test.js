@@ -30,11 +30,15 @@ const asyncSleep = ms =>
     }, ms)
   })
 
+const randomStringGenerator = () =>
+  [...Array(30)].map(() => Math.random().toString(36)[2]).join('')
+
 require('./contactTests')({ propNames, Contact, assert })
 require('./contactsServiceTests')({
   contactsService,
   Contact,
   assert,
   hasAsyncError,
-  asyncSleep
+  asyncSleep,
+  randomStringGenerator
 })

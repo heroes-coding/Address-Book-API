@@ -3,7 +3,8 @@ const contactServiceTests = ({
   Contact,
   assert,
   hasAsyncError,
-  asyncSleep
+  asyncSleep,
+  randomStringGenerator
 }) => {
   describe('contactsService', function () {
     describe('createsAndMakesAvailableNewContactsThatAreNotAvailableOnceSuccessfullyDeleted', function () {
@@ -131,15 +132,62 @@ const contactServiceTests = ({
         })
       })
     })
+    describe('queryParameterMustBeOfProperForm', function () {
+      it("A query JSON string / object without query won't work", async function () {
+        const query = {
+          query_string: { default_field: 'name', query: 'Joe' }
+        }
+        const hasError = await hasAsyncError(() =>
+          contactsService.queryContacts({
+            query
+          })
+        )
+        assert.equal(hasError, true)
+      })
+    })
+    describe('returnsProperNumberOfResultsAndDifferentResultsPerPage', function () {
+      const randomLastName = randomStringGenerator()
+      const names = ['Bob', 'Jane', 'Frank', 'Helen', 'Guy'].map(
+        n => `${n} ${randomLastName}`
+      )
+      names.forEach(name => contactsService.addContact({ name }))
+      it('Returns proper number of results after a delay', async function () {
+        await asyncSleep(1250)
+        const contacts = await contactsService.queryContacts({
+          pageSize: 2
+        })
+        assert.equal(contacts.length, 2)
+      })
+      it('Returns different results per page', async function () {
+        const contacts1 = await contactsService.queryContacts({
+          pageSize: 2,
+          page: 0
+        })
+        const contacts2 = await contactsService.queryContacts({
+          pageSize: 2,
+          page: 0
+        })
+        const contacts2Names = contacts2.map(c => c.name)
+        const contactsWithSameName = contacts1.filter(c =>
+          contacts2Names.includes(c)
+        )
+        assert.equal(contactsWithSameName.length, 0)
+      })
+      names.forEach(name => contactsService.deleteContact(name))
+    })
     describe('returnsIndexedContactsBySearchTermAfterDelay', function () {
       it('Returns expected length of contacts after a delay', async function () {
-        const crazyLastName = 'NobodyElseHasThisLastNameTrustMe'
+        const randomLastName = randomStringGenerator()
         const names = ['Bob', 'Jane', 'Frank', 'Helen', 'Guy'].map(
-          n => `${n} ${crazyLastName}`
+          n => `${n} ${randomLastName}`
         )
         names.forEach(name => contactsService.addContact({ name }))
-        await asyncSleep(1000)
-        const query = `name:${crazyLastName}`
+        await asyncSleep(1250)
+        const query = {
+          query: {
+            query_string: { default_field: 'name', query: randomLastName }
+          }
+        }
         const contacts = await contactsService.queryContacts({
           query
         })
